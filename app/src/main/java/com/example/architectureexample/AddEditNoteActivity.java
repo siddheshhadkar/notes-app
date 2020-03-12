@@ -12,7 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class AddNoteActivity extends AppCompatActivity {
+public class AddEditNoteActivity extends AppCompatActivity {
+    public static final String EXTRA_ID = "com.example.architectureexample.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.example.architectureexample.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.example.architectureexample.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.example.architectureexample.EXTRA_PRIORITY";
@@ -34,7 +35,16 @@ public class AddNoteActivity extends AppCompatActivity {
         priorityNumberPicker.setMaxValue(10);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Add Note");
+
+        Intent i = getIntent();
+        if (i.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Note");
+            addTitle.setText(i.getStringExtra(EXTRA_TITLE));
+            addDescription.setText(i.getStringExtra(EXTRA_DESCRIPTION));
+            priorityNumberPicker.setValue(i.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle("Add Note");
+        }
     }
 
     private void saveNote() {
@@ -42,7 +52,7 @@ public class AddNoteActivity extends AppCompatActivity {
         String description = addDescription.getText().toString();
         int priority = priorityNumberPicker.getValue();
 
-        if (title.trim().isEmpty() || description.trim().isEmpty()){
+        if (title.trim().isEmpty() || description.trim().isEmpty()) {
             Toast.makeText(this, "Empty Title or Description", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -51,6 +61,11 @@ public class AddNoteActivity extends AppCompatActivity {
         i.putExtra(EXTRA_TITLE, title);
         i.putExtra(EXTRA_DESCRIPTION, description);
         i.putExtra(EXTRA_PRIORITY, priority);
+
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            i.putExtra(EXTRA_ID, id);
+        }
 
         setResult(RESULT_OK, i);
         finish();
